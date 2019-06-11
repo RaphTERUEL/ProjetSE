@@ -5,9 +5,7 @@ int mymkdir(char *nom, disk *mondisk)
 {//primitive pour créer un dossier
  
    	creeinode(mondisk);
-   	printf("%d\n",mondisk->inode->nb_inode);
-   	printf("%s\n",nom );
- 	creerepertoir(mondisk->inode->nb_inode-1,nom, mondisk);
+   	creerepertoir(mondisk->inode->nb_inode-1,nom, mondisk);
   
    return 0;
 }
