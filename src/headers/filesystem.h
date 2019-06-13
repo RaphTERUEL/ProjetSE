@@ -38,6 +38,7 @@ void creeinode(disk *mondisk);
 infoinode *get_inode(int numinode, disk *mondisk);
 infoinode *recupe_inode_from_num(int numinode, disk *mondisk);
 void creerepertoir(int nouvelinode, char *nom, disk *mondisk);
+void creefichier(int nouvelinode, char *nom, disk *mondisk);
 int get_free_bloc(disk *mondisk);
 int nb_blocutiliser(int blocutiliser[]);
 void root(disk *mondisk);
