@@ -45,6 +45,8 @@ void root(disk *mondisk);
 void add_data_to_inode(disk *mondisk, int inode, char *data);
 void add_bloc_to_inode(int blocnum, infoinode *inode);
 char *add_data_to_bloc(disk *mondisk, int numbloc, char *data);
+void sauvegarder(disk *mondisk);
+void charger(disk *mondisk);
 
 
 #endif 

@@ -1,4 +1,4 @@
-#include "header.h"
+#include "headers/header.h"
 #include <time.h>
 char * saisircomande(char commande[100]){
 	char taille[100];
@@ -76,12 +76,21 @@ int Interpreteur(char* argv[],int argc,disk * mondisk){
 
 		if(argc == 2)
 		{
-			printf(argv[1]);
+			printf("%s",argv[1]);
 		}
 		else if(argc == 4)
 		{
 			mywrite(nom_to_inode(argv[3], mondisk), argv[1], strlen(argv[1]), mondisk);
 		}
+		return 1;
+	}
+	else if(!strcmp(argv[0], "cd"))
+	{
+
+		if(argc ==2)
+		{
+			mycd(argv[1],mondisk);			
+		}	
 		return 1;
 	}
 	return 1;

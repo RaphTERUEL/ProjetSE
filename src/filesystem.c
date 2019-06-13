@@ -1,4 +1,4 @@
-#include "header.h"
+#include "headers/header.h"
 
 
 
@@ -239,6 +239,129 @@ char *add_data_to_bloc(disk *mondisk, int numbloc, char *data)
 
     return NULL;
   }
+}
+
+
+
+void sauvegarder(disk *mondisk){
+
+  int numinode= 0;
+
+  FILE *monfichier = fopen("mondisk",  "w+");
+  
+  fprintf(monfichier, "%d\n", mondisk->inode->nb_inode);
+  
+  infoinode *i = mondisk->inode->first;
+  while(i!= NULL)
+  {
+    fprintf(monfichier, "I%d:%d %d %d %d %d %d %d %d %d\n", numinode,i->permissions[0],i->permissions[1],i->permissions[2],i->permissions[3],i->permissions[4],i->permissions[5],i->permissions[6],i->permissions[7],i->permissions[8]);
+    fprintf(monfichier, "I%d:", numinode);
+    for (int j = 0; j < 30; j++)
+    {
+     fprintf(monfichier, "%d ",i->blocutiliser[j]);
+    }
+    fprintf(monfichier, "\n");
+    fprintf(monfichier, "I%d:%d\n", numinode, i->typefichier);
+    i= i->next;
+    numinode++;
+  }
+  fprintf(monfichier, "\n");
+  for (int i = 0; i < 60; i++)
+  {
+    fprintf(monfichier, "B%d:%d\n%s",i,mondisk->bloc[i].taille, mondisk->bloc[i].unbloc);
+  }
+
+  fclose(monfichier);
+}
+
+
+void charger(disk *mondisk){
+  size_t len = 0;
+  ssize_t read;
+  char *line = NULL;
+  char other_part[1024];
+  char first_part[1024];
+  char * numbloc=NULL;
+  int integer_found = -1;
+  int integer_found2 = -1;
+  int nb_inode;
+  mondisk->bloc[0].taille=0;
+  int cnt=0;
+  FILE *monfichier = fopen("mondisk",  "r");
+  infoinode *i = NULL;
+      getline(&line, &len, monfichier);
+      sscanf(line, "%d",&nb_inode);
+     
+  while (cnt<nb_inode)
+  {//lit la ligne
+     
+        integer_found = -1;
+        other_part[0] = '\0';
+        creeinode(mondisk);
+        i=get_inode(cnt,mondisk);
+        getline(&line, &len, monfichier);
+        sscanf(line, "%d:%s", &integer_found, other_part);
+        strcpy(i->permissions, other_part);
+        getline(&line, &len, monfichier);
+        // sscanf(line, "%d",  &integer_found);
+        sscanf(line, "%[^0-9]%d:%[^a-z]", first_part, &integer_found,other_part);
+         
+        numbloc=strtok(other_part," ");
+        int j=0;
+        while(numbloc!= NULL){
+          i->blocutiliser[j]=atoi(numbloc);
+          numbloc=strtok(NULL," ");
+          j++;
+        }
+       
+        getline(&line, &len, monfichier);
+        sscanf(line, "%[^0-9]%d:%d", first_part, &integer_found, &integer_found2);
+        i->typefichier= integer_found2;
+
+        cnt++;
+      
+  }
+  cnt=0;
+  char char_read;
+  while((char_read = fgetc(monfichier))!= EOF)
+  {  
+    if (char_read == '\n')
+      continue;
+    else if (char_read != 'B')
+    {//si on ne trouve pas un bloc
+      while((char_read = fgetc(monfichier)) != '\n' && char_read != EOF)
+      {}//on va jusqu'a la ligne suivante
+    }
+    else
+    {
+      if ((read = getline(&line, &len, monfichier)) != -1)
+      {//récupère la ligne
+
+        const char delim[1] = ":";
+        char *token;
+        token = strtok(line, delim);
+        while(token != NULL)
+        {
+          integer_found = atoi(token);
+          token = strtok(NULL, delim);       
+        }
+        //récupère le bloc
+        
+        mondisk->bloc[cnt].taille = integer_found; //enregistre sa taille
+        for(int i = 0; i < integer_found; i++)
+        {//récupère ses caractères
+          mondisk->bloc[cnt].unbloc[i] = fgetc(monfichier);
+        }
+        mondisk->bloc[cnt].unbloc[integer_found] = '\0';
+        cnt++;
+      }
+    }
+  }
+  
+  
+   
+  fclose(monfichier);
+
 }
 
 

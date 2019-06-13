@@ -1,4 +1,4 @@
-#include "header.h"
+#include "headers/header.h"
 
 
 int mymkdir(char *nom, disk *mondisk)
@@ -121,3 +121,48 @@ void mycat(int inode, disk* mondisk){
 		printf("%s\n",message);
 	}
 }
+
+void mycd(char *nom, disk *mondisk){
+	int i=myopen(nom,mondisk);
+	if(i!=-1){
+		
+		infoinode * inode=get_inode(i,mondisk);
+		if(inode->typefichier==3){
+			courant=i;
+			
+		}
+		else
+			printf("ce n'est pas un dossier\n");
+	}
+	else
+		printf("ce dossier n'existe pas\n");
+
+}
+
+int myopen(char *nom, disk *mondisk){
+	char * numinod=NULL;
+	int j=0;
+	infoinode* i;
+	i=get_inode(courant,mondisk);
+	
+	
+	
+	while(i->blocutiliser[j]!=-1)
+	{
+		char data[1024] = { 0 };
+		strcpy(data, mondisk->bloc[i->blocutiliser[j]].unbloc);
+	
+		numinod=strstr(data,nom);
+
+		if(numinod!= NULL){
+			numinod=strtok(numinod,"\n");
+			numinod=strtok(numinod," ");
+			numinod=strtok(NULL," ");
+			
+			return atoi(numinod);			
+		}
+		j++;
+	}
+	return -1;
+}
+
