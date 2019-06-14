@@ -8,6 +8,11 @@ void init(disk *mondisk)
   mondisk->inode=malloc(sizeof(inodelist));
   mondisk->inode->first = NULL;
   mondisk->inode->nb_inode=0;
+  for (int i = 0; i < 60; ++i)
+  {
+    mondisk-> bloc[i].unbloc[0]='\0';
+    mondisk-> bloc[i].taille=0;
+  }
   courant=0;
 }
 void root(disk *mondisk)
@@ -323,7 +328,7 @@ void charger(disk *mondisk){
   }
   cnt=0;
   char char_read;
-  while((char_read = fgetc(monfichier))!= EOF)
+  while((char_read = fgetc(monfichier))!= EOF && cnt<60)
   {  
     if (char_read == '\n')
       continue;
@@ -347,7 +352,8 @@ void charger(disk *mondisk){
         }
         //récupère le bloc
         
-        mondisk->bloc[cnt].taille = integer_found; //enregistre sa taille
+        mondisk->bloc[cnt].taille = integer_found;
+            //enregistre sa taille
         for(int i = 0; i < integer_found; i++)
         {//récupère ses caractères
           mondisk->bloc[cnt].unbloc[i] = fgetc(monfichier);

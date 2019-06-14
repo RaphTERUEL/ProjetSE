@@ -2,7 +2,7 @@
 
 int main()
 {
-     disk mondisk;
+    disk mondisk;
  
    	init(&mondisk);
    	//root(&mondisk);
